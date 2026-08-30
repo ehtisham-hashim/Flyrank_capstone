@@ -1,0 +1,23 @@
+name: flyrank-capstone-widget-platform
+track: backend
+language: javascript
+framework: express
+database: postgresql
+orm: drizzle
+
+run: cd backend && pnpm start
+seed: cd backend && pnpm seed
+migrate: cd backend && pnpm migrate
+base_url: http://localhost:3000
+
+endpoints:
+  health: /health
+  auth_register: /api/auth/register
+  auth_login: /api/auth/login
+  widgets: /api/widgets
+  submissions: /api/submissions
+  config: /widgets/:id/config
+  widget_script: /widget.js
+  dashboard_submissions: /api/dashboard/submissions
+  dashboard_stats: /api/dashboard/stats
+  dashboard_geo: /api/dashboard/geo
