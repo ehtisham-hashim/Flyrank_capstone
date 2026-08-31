@@ -130,6 +130,90 @@ Expected: `{"status":"ok","database":"connected",...}`
 
 ---
 
+## Verification
+
+### Option A — Automated (All 6 Probes at Once)
+
+With the backend running (`pnpm dev`), in a separate terminal:
+
+```bash
+cd backend
+pnpm test:probes
+```
+
+Expected output:
+```
+ALL ACCEPTANCE PROBES VERIFIED SUCCESSFULLY! ✓
+```
+
+This covers: cross-origin submission, boundary validation, rate limiting, geo fallback, safe side effects, and honeypot spam detection.
+
+---
+
+### Option B — Manual Browser Demo (See It Live)
+
+**Step 1 — Open the Owner Dashboard**
+```
+http://localhost:3000/dashboard
+```
+Login with: `demo@flyrank.com` / `password123`
+
+You will see your embed `<script>` tag, lead stats, and a submissions table (empty at first).
+
+**Step 2 — Open the Customer Website** *(different origin)*
+```
+http://localhost:5500
+```
+This is a separate website on a different port (different origin). It has your widget embedded via the `<script>` tag.
+
+**Step 3 — Submit the Form**
+
+Fill in Name and Email on the customer site → click **Subscribe Now**.
+
+The form submits cross-origin to `http://localhost:3000/api/submissions`.
+
+**Step 4 — See the Lead in Your Dashboard**
+
+Switch back to `http://localhost:3000/dashboard` → click **Refresh**.
+
+The submission appears in the table with country, city, IP address, and timestamp — captured from the visitor's IP via geo enrichment.
+
+---
+
+### Option C — Quick curl Check
+
+```bash
+# Health
+curl http://localhost:3000/health
+
+# Register & get a token
+curl -s -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@flyrank.com","password":"password123"}'
+
+# Submit a lead (cross-origin)
+curl -i -X POST http://localhost:3000/api/submissions \
+  -H "Origin: http://localhost:5500" \
+  -H "Content-Type: application/json" \
+  -d '{"widgetId":"<widget-id-from-dashboard>","data":{"name":"Test","email":"t@t.com"}}'
+# → HTTP 201 Created
+
+# Trigger 429 (burst test)
+for i in {1..18}; do curl -s -o /dev/null -w "Req $i: %{http_code}\n" \
+  -X POST http://localhost:3000/api/submissions \
+  -H "Content-Type: application/json" \
+  -d '{"widgetId":"<id>","data":{"x":1}}'; done
+# → First ~11 succeed (201), then 429s kick in
+
+# Honeypot test
+curl -i -X POST http://localhost:3000/api/submissions \
+  -H "Content-Type: application/json" \
+  -d '{"widgetId":"<id>","data":{"name":"Bot"},"_hp":"filled-by-bot"}'
+# → HTTP 400 "Submission rejected by spam protection filter"
+```
+
+---
+
 ## API Reference
 
 | Method | Endpoint | Auth | Description |
