@@ -129,6 +129,10 @@ curl http://localhost:3000/health
 ```
 Expected: `{"status":"ok","database":"connected",...}`
 
+> **Dashboard preview** — after logging in at `http://localhost:3000/dashboard`:
+
+![Owner Dashboard — embed snippet and lead stats](images/image-1.png)
+
 ---
 
 ## Verification
@@ -214,6 +218,8 @@ The form submits cross-origin to `http://localhost:3000/api/submissions`.
 Switch back to `http://localhost:3000/dashboard` → click **Refresh**.
 
 The submission appears in the table with country, city, IP address, and timestamp — captured from the visitor's IP via geo enrichment.
+
+![Captured submissions table in the owner dashboard](images/image-2.png)
 
 ---
 
