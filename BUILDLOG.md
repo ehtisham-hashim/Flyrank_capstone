@@ -5,6 +5,25 @@
 
 ---
 
+## AI Tools Used
+
+| Tool | Role |
+|---|---|
+| **[Antigravity](https://deepmind.google/antigravity)** (by Google DeepMind) | Primary AI coding assistant used throughout all 3 phases — scaffolding, implementation, debugging, and documentation |
+
+**How Antigravity was used:**
+- Generating boilerplate (Express routes, middleware, Drizzle schema)
+- Writing service logic (geo fallback chain, spam detection, JWT auth)
+- Debugging runtime errors (Express 5 → 4 crash, Prisma binary failure)
+- Writing and iterating on documentation (README, BUILDLOG, EVIDENCE.md)
+
+**What was NOT delegated to AI:**
+- Final decisions on architecture (Drizzle over Prisma, raw SQL migrations over Drizzle's auto-migrate)
+- Identifying and fixing runtime bugs the AI introduced (Express 5, misplaced imports)
+- Verifying the actual output of all 6 acceptance probes on the real machine
+
+---
+
 ## Session 1 — Phase 1: Scaffolding & Design (2026-08-30)
 
 **AI assisted with:**

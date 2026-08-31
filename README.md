@@ -50,6 +50,7 @@ A resilient, multi-tenant lead capture and embeddable widget platform. Customers
 | Validation | Zod |
 | Auth | JWT (jsonwebtoken) + bcryptjs |
 | Package Manager | pnpm |
+| AI Assistant | Antigravity by Google DeepMind |
 
 ### Why Drizzle ORM (not Prisma)
 
