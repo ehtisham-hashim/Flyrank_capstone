@@ -46,12 +46,25 @@ A resilient, multi-tenant lead capture and embeddable widget platform. Customers
 | Runtime | Node.js (ESM) |
 | Framework | Express 4 |
 | Database | PostgreSQL 16 (Docker) |
-| ORM / Migrations | Drizzle ORM + custom SQL migration runner |
+| ORM / Migrations | Drizzle ORM + raw SQL migrations |
 | Validation | Zod |
 | Auth | JWT (jsonwebtoken) + bcryptjs |
 | Package Manager | pnpm |
 
-> **Note on ORM choice:** Prisma was initially considered but caused install failures on Ubuntu due to its binary engine download mechanism timing out. Drizzle ORM was used instead — it is lightweight, has zero native binaries, and works cleanly with plain `pg` pool connections.
+### Why Drizzle ORM (not Prisma)
+
+Prisma was the first choice but **failed to install on Ubuntu** — it downloads large native binary engines (`@prisma/engines`) at install time, which timed out repeatedly on this machine. Drizzle ORM was chosen as the replacement because:
+- Zero native binaries — pure JavaScript, installs instantly
+- Works directly on top of a plain `pg.Pool` connection
+- Schema is just TypeScript/JavaScript — no separate `.prisma` file needed
+
+### Why there are `.sql` files in `backend/src/db/migrations/`
+
+Drizzle can auto-generate and run migrations, but for this capstone **raw SQL migration files** were used intentionally:
+- They are explicit and readable — anyone can open `001_create_users.sql` and see exactly what schema was created
+- They run in order via a simple custom runner (`migrate.js`) that tracks which files have already been applied
+- This satisfies the capstone's requirement of *"schema as migrations"* in a way that is easy to audit and verify
+- No magic — what you see in the `.sql` file is exactly what runs against PostgreSQL
 
 ---
 
