@@ -8,6 +8,7 @@ orm: drizzle
 run: cd backend && pnpm start
 seed: cd backend && pnpm seed
 migrate: cd backend && pnpm migrate
+test: cd backend && pnpm test:probes
 base_url: http://localhost:3000
 
 endpoints:
