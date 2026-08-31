@@ -135,19 +135,55 @@ Expected: `{"status":"ok","database":"connected",...}`
 
 ### Option A — Automated (All 6 Probes at Once)
 
+The test script is at **`backend/src/test_probes.js`** (127 lines). It spins up a temporary test tenant, creates a widget, fires all 6 probes against the live API, and prints pass/fail for each.
+
 With the backend running (`pnpm dev`), in a separate terminal:
 
 ```bash
 cd backend
 pnpm test:probes
+# runs: node src/test_probes.js
 ```
 
 Expected output:
 ```
-ALL ACCEPTANCE PROBES VERIFIED SUCCESSFULLY! ✓
+====================================================
+ FlyRank Capstone — Automated Acceptance Probes Test
+====================================================
+
+[Setup] Registering test tenant...
+✓ Tenant created: tester_xxx@example.com
+
+[Setup] Creating test widget...
+✓ Widget created: "Feedback Widget"
+  Snippet: <script src="http://localhost:3000/widget.js?id=..." async></script>
+
+--- PROBE 1: Valid Submission & Dashboard Visibility ---
+✓ Submission stored: <uuid>
+✓ PROBE 1 PASSED: Found in dashboard list (Total: 1)
+
+--- PROBE 2: Boundary Validation ---
+✓ PROBE 2 PASSED: Malformed input properly rejected (Zod validation)
+
+--- PROBE 4: Geolocation Enrichment Fallback ---
+✓ Real IP (8.8.8.8) enriched -> Country: United States, City: Ashburn, Provider: ip-api.com
+✓ Local IP degraded gracefully -> Country: Localhost, Provider: local
+✓ PROBE 4 PASSED: Graceful degradation holds.
+
+--- PROBE 5: Non-blocking Side Effect ---
+✓ Side effect executed cleanly (success=true)
+✓ PROBE 5 PASSED: Main path never blocked.
+
+--- PROBE 6: Honeypot Spam Prevention ---
+✓ Bot submission flagged: isSpam=true
+✓ PROBE 6 PASSED: Bot submission rejected by pipeline
+
+====================================================
+ ALL ACCEPTANCE PROBES VERIFIED SUCCESSFULLY! ✓
+====================================================
 ```
 
-This covers: cross-origin submission, boundary validation, rate limiting, geo fallback, safe side effects, and honeypot spam detection.
+> **Note on Probe 3 (Rate Limiting):** The burst test is not in the automated script because it consumes rate limit quota and would interfere with the other probes. Run it manually via the curl loop in Option C below.
 
 ---
 
